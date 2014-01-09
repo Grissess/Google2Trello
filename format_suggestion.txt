@@ -1,0 +1,5 @@
+- Name: %(name)s
+- Email: %(email)s
+- Past years: %(pastyears)s
+- Type: %(type)s
+- Suggestion: %(suggestion)s					

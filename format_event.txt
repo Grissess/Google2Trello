@@ -1,0 +1,8 @@
+- Name: %(name)s
+- Email: %(email)s
+- Past years: %(pastyears)s
+- Type: %(type)s
+- Proposal: %(eventsubmission)s
+- Panelists: %(eventpanelists)s
+- Room: %(eventroom)s
+- Additional Information: %(eventadditionalinformation)s						

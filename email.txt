@@ -1,0 +1,10 @@
+From: nexus@nexusg.org
+To: grissess@bronycon.org
+Subject: G2T Failure Notice
+Content-type: text/plain
+
+The google2trello.py script has reported failure during its last run. Changes that were made may not have been imported; please check the system for more details.
+
+The process' stdout and stderr streams follow.
+
+

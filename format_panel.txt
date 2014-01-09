@@ -1,0 +1,9 @@
+- Name: %(name)s
+- Email: %(email)s
+- Past years: %(pastyears)s
+- Type: %(type)s
+- Proposal: %(panelsubmission)s
+- Panelists: %(panelpanelists)s
+- Category: %(panelcategory)s
+- A/V Needs: %(panelavneeds)s
+- Additional Information: %(paneladditionalinformation)s						
