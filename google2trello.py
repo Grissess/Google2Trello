@@ -7,6 +7,7 @@ __version__=(0, 0, 1)
 print 'Google2Trello version', __version__
 ##raise SystemError('Simulated Error Condition')
 
+import time
 import ConfigParser
 
 from trollop import TrelloConnection
@@ -117,20 +118,26 @@ else:
 	exit()
 
 print 'Retrieving cards...'
+starttime=time.time()
 cards=board.cards
+endtime=time.time()
+dtime=endtime-starttime
 cnames=[card.name for card in cards]
-print 'Retrieved.'
+print 'Retrieved', len(cards), 'cards in', dtime, 'seconds.'
 
 print 'Retrieving rows...'
+starttime=time.time()
 rows=sheet.get_rows()
-print 'Retrieved.'
+endtime=time.time()
+dtime=endtime-starttime
+print 'Retrieved', len(rows), 'rows in', dtime, 'seconds.'
 
-nameattr=cp.get('Transfer', 'nameattr')
+namefmt=cp.get('Transfer', 'name')
 
 seennames=set()
 
 for row in rows:
-	name=row[nameattr]
+	name=namefmt%row
 	if name in seennames:
 		print 'WARNING: Potential duplicate spreadsheet entry:', repr(name)
 	else:
