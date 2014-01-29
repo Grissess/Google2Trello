@@ -137,6 +137,8 @@ namefmt=cp.get('Transfer', 'name')
 
 seennames=set()
 
+print 'Sample row:', rows[0]
+
 for row in rows:
 	name=namefmt%row
 	if name in seennames:

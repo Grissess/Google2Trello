@@ -33,22 +33,20 @@ try:
 	descfmt=open(cp.get('Transfer', 'formatfile'), 'r').read()
 	custfmts={}
 	destlists={}
-	skiplists={}
+	skipsets={}
 	for opt in cp.options('Transfer'):
 		if opt.startswith('format_'):
 			x, col, val=opt.split('_')
-			if col not in custfmts:
-				custfmts[col]={}
-			custfmts[col][val]=open(cp.get('Transfer', opt), 'r').read()
+			custfmts.setdefault(col, {})[val]=open(cp.get('Transfer', opt), 'r').read()
 			print 'Assigned custom format for value', val, 'in column', col, 'to', cp.get('Transfer', opt)
 		if opt.startswith('list_'):
 			x, col, val=opt.split('_')
-			if col not in destlists:
-				destlists[col]={}
-			destlists[col][val]=cp.get('Transfer', opt)
+			destlists.setdefault(col, {})[val]=cp.get('Transfer', opt)
 			print 'Assigned custom list for value', val, 'in column', col, 'to', cp.get('Transfer', opt)
 		if opt.startswith('skip_'):
-			pass
+			x, col, val=opt.split('_')
+			skipsets.setdefault(col, set()).add(val)
+			print 'Assigned skip condition for value', val, 'in column', col
 except IOError:
 	print 'Could not find one or more formats; aborting.'
 	exit()
@@ -146,11 +144,16 @@ for row in rows:
 	else:
 		seennames.add(name)
 	if name in cnames:
-		print 'Skipping',repr(name), '--the card exists'
+		print 'Skipping', repr(name), '--the card exists'
 		continue
 	fmt=descfmt
 	dest=list_
+	skip=False
 	for col in row.iterkeys():
+	    if col in skipsets and skipsets[col]==safename(row[col]):
+	        skip=True
+	        print 'Skipping', repr(name), 'on a skip condition'
+	        break
 		if col in custfmts:
 			if safename(row[col]) in custfmts[col]:
 				fmt=custfmts[col][safename(row[col])]
@@ -166,5 +169,7 @@ for row in rows:
 				else:
 					print 'ERROR: No such list.'
 					exit()
+	if skip:
+	    continue
 	dest.add_card(row[nameattr], fmt%row)
 	print 'Added card', repr(name)
