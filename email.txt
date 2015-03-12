@@ -1,5 +1,6 @@
-From: nexus@nexusg.org
-To: grissess@bronycon.org
+From: grissess@nexusg.org
+To: grahamnorthup@yahoo.com
+Cc: springhope@bronycon.org
 Subject: G2T Failure Notice
 Content-type: text/plain
 

@@ -1,9 +1,20 @@
-- Name: %(name)s
-- Email: %(email)s
-- Past years: %(pastyears)s
-- Type: %(type)s
-- Proposal: %(panelsubmission)s
-- Panelists: %(panelpanelists)s
-- Category: %(panelcategory)s
-- A/V Needs: %(panelavneeds)s
-- Additional Information: %(paneladditionalinformation)s						
+** Contact Information **
+
+  - Full Name: %(fullname)s
+  - Fandom Name: %(fandomnamenickname)s
+  - Email: %(preferredemail)s
+  - Type: %(whichoftheabovetypesofeventsareyousubmitting)s
+  - Past Years: %(haveyouorganizedapaneloractivityatbronyconinthepast)s
+  - Past Examples: %(ifsowhichones)s
+  - Potential Attendee Status: %(doyouintendorwishtobeanyofthefollowingatbronycon2015)s
+
+** Submission **
+
+  - Title: %(whatisthetitleofthepanel)s
+  - Additional Panelists: %(additionalpanelists)s
+  - Proposal: %(whatisthepanelabout)s
+  - Links: %(paneldoyouhaveanyrelevantlinksyoucanprovide)s
+  - A/V Needs: %(wouldyourpanelrequireanyunusualavortechnicalneeds)s
+  - Category: %(whichofthefollowingcategoriesorpaneltrackswouldyouputyourpanelinto)s
+  - VIPs?:  %(wouldyoubeinterestedinhavingvipsguestsofhonoronyourpanel)s
+  - Additional Information: %(panelisthereanyadditionalinformationyouwouldlikeustoknow)s

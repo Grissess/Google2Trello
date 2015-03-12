@@ -2,12 +2,14 @@
 #(ideal for Google's forms)
 #by Grissess
 
-__version__=(0, 0, 1)
-
-print 'Google2Trello version', __version__
-##raise SystemError('Simulated Error Condition')
+__version__=(0, 0, 2)
 
 import time
+
+print 'Google2Trello version', __version__
+print 'The time is', time.ctime()
+##raise SystemError('Simulated Error Condition')
+
 import ConfigParser
 
 from trollop import TrelloConnection
@@ -22,7 +24,7 @@ def safename(s):
 			ret+=c
 	return ret.lower()
 
-cp=ConfigParser.SafeConfigParser()
+cp=ConfigParser.RawConfigParser()
 try:
 	cp.readfp(open('g2t.cfg', 'r'))
 except IOError:
@@ -34,6 +36,7 @@ try:
 	custfmts={}
 	destlists={}
 	skipsets={}
+	custnames={}
 	for opt in cp.options('Transfer'):
 		if opt.startswith('format_'):
 			x, col, val=opt.split('_')
@@ -47,13 +50,19 @@ try:
 			x, col, val=opt.split('_')
 			skipsets.setdefault(col, set()).add(val)
 			print 'Assigned skip condition for value', val, 'in column', col
+		if opt.startswith('name_'):
+			x, col, val=opt.split('_')
+			custnames.setdefault(col, {})[val]=cp.get('Transfer', opt)
+			print 'Assigned custom name for value', val, 'in column', col, 'to', cp.get('Transfer', opt)
 except IOError:
 	print 'Could not find one or more formats; aborting.'
 	exit()
 	
 print 'Dispatchers:'
-print 'Custom formats:', custfmts
-print 'Destination lists:', destlists
+print '\tCustom formats:', custfmts
+print '\tDestination lists:', destlists
+print '\tSkip sets:', skipsets
+print '\tCustom names:', custnames
 
 api=SpreadsheetAPI(cp.get('Google', 'user'), cp.get('Google', 'password'), 'python.google2trello')
 print 'Authenticating against Google...'
@@ -61,6 +70,8 @@ try:
 	ss=api.list_spreadsheets()
 except BadAuthentication:
 	print 'Could not authenticate with specified Google credentials.'
+	import traceback
+	traceback.print_exc()
 	exit()
 
 sname=cp.get('Google', 'spreadsheet')
@@ -135,14 +146,32 @@ print 'Retrieved', len(rows), 'rows in', dtime, 'seconds.'
 
 namefmt=cp.get('Transfer', 'name')
 
+fake=(cp.get('Transfer', 'fake').lower()=='true')
+verbose=(cp.get('Transfer', 'verbose').lower()=='true')
+
 seennames=set()
+
+if not rows:
+	print 'No rows! Stop.'
+	exit()
 
 print 'Sample row:', rows[0]
 
 for row in rows:
 	name=namefmt%row
+	for col in row.iterkeys():
+		if col in custnames:
+			if safename(row[col]) in custnames[col]:
+				name=custnames[col][safename(row[col])]%row
+				print 'Using custom name for', col, '=', safename(row[col])
 	if name in seennames:
 		print 'WARNING: Potential duplicate spreadsheet entry:', repr(name)
+		i=2
+		orgname = name
+		while ('%s (#%d)'%(orgname, i)) in seennames:
+			i+=1
+		name = '%s (#%d)'%(orgname, i)
+		print '...renamed to:', repr(name)
 	else:
 		seennames.add(name)
 	if name in cnames:
@@ -156,11 +185,11 @@ for row in rows:
 	        skip=True
 	        print 'Skipping', repr(name), 'on a skip condition'
 	        break
-		if col in custfmts:
+	    if col in custfmts:
 			if safename(row[col]) in custfmts[col]:
 				fmt=custfmts[col][safename(row[col])]
 				print 'Using custom format for', col, '=', safename(row[col])
-		if col in destlists:
+	    if col in destlists:
 			if safename(row[col]) in destlists[col]:
 				lname=destlists[col][safename(row[col])]
 				print 'Using custom list for', col, '=', safename(row[col])
@@ -169,9 +198,16 @@ for row in rows:
 						dest=l
 						break
 				else:
-					print 'ERROR: No such list.'
-					exit()
-	if skip:
+					raise NameError('ERROR: No such list')
+	if verbose:
+		print ' Built card '.center(40, '=')
+		print name
+		print '-'*len(name)
+		print fmt%row
+		print '='*40
+	if skip or fake:
+	    print 'Not adding card -- skipped or running in fake mode'
 	    continue
-	dest.add_card(row[nameattr], fmt%row)
+	dest.add_card(name, fmt%row)
+	cnames.append(name)
 	print 'Added card', repr(name)

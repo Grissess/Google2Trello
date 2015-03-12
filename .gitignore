@@ -1,0 +1,5 @@
+*.pyc
+*~
+G2T_LOG
+G2T_ERROR
+MAIL_LOG
